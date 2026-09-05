@@ -1,0 +1,6 @@
+interface:
+  display_name: "数学建模教练"
+  short_description: "显式启动一轮数学建模定向、审查、提炼与下一步行动建议"
+  default_prompt: "Use $math-modeling-coach for one coach round on the current mathematical-modeling work, then stop."
+policy:
+  allow_implicit_invocation: false
