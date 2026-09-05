@@ -1,0 +1,18 @@
+{
+  "status": "optional_empirical_starting_point_not_official",
+  "colors": {
+    "primary": "#2F6B9A",
+    "emphasis": "#E58B2A",
+    "secondary_cyan": "#2A9D8F",
+    "secondary_purple": "#7A6FA8",
+    "text": "#2B2B2B",
+    "grid": "#D9DEE3",
+    "muted": "#8A949E"
+  },
+  "rules": [
+    "Assign colors by meaning and keep that mapping consistent across figures.",
+    "Use line style, markers, labels, or luminance so hue is not the only channel.",
+    "Prefer one main color, one emphasis color, and neutral support.",
+    "Verify grayscale and normal-page-size legibility before delivery."
+  ]
+}

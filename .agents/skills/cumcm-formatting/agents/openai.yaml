@@ -1,0 +1,7 @@
+interface:
+  display_name: "CUMCM 论文写作与排版"
+  short_description: "从证据起草、审阅、可视化并检查 CUMCM 论文"
+  brand_color: "#2F6B9A"
+  default_prompt: "使用 $cumcm-formatting 根据我的论证大纲和证据起草或审阅 CUMCM 论文，并区分硬性违规、改进建议和人工判断。"
+policy:
+  allow_implicit_invocation: true

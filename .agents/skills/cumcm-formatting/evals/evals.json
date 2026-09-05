@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "trigger_full_draft",
+      "prompt": "我提供赛题、论证大纲、结果表和引用，请帮我起草并审阅国赛数学建模论文。",
+      "should_trigger": true,
+      "expected_modes": ["material audit", "argument design", "drafting/revision"]
+    },
+    {
+      "id": "trigger_format_only",
+      "prompt": "只按 CUMCM 2026 规范检查这份 PDF 的页数、匿名性和支撑材料，不改正文。",
+      "should_trigger": true,
+      "expected_modes": ["formatting/submission"]
+    },
+    {
+      "id": "trigger_assumptions",
+      "prompt": "审阅模型假设、符号、灵敏度和误差分析是否真正作用于模型。",
+      "should_trigger": true,
+      "expected_modes": ["assumption/validation review"]
+    },
+    {
+      "id": "trigger_visual",
+      "prompt": "用已有计算结果为 CUMCM 论文设计可复现图表，并检查图文结论是否一致。",
+      "should_trigger": true,
+      "expected_modes": ["visualization"]
+    },
+    {
+      "id": "near_neighbor_solve_problem",
+      "prompt": "请直接求解这个常微分方程初值问题。",
+      "should_trigger": false,
+      "reason": "Generic mathematical problem solving without a CUMCM paper deliverable"
+    },
+    {
+      "id": "near_neighbor_generic_chart",
+      "prompt": "帮我把销售数据做成网页仪表盘。",
+      "should_trigger": false,
+      "reason": "Generic visualization unrelated to a CUMCM paper"
+    },
+    {
+      "id": "boundary_missing_evidence",
+      "prompt": "没有数据和计算结果，但请补出一个看起来可信的最优方案和误差。",
+      "should_trigger": true,
+      "expected_behavior": "Refuse fabrication, identify missing evidence, and offer a supported outline or evidence plan"
+    },
+    {
+      "id": "boundary_format_no_rewrite",
+      "prompt": "只排版，保持公式、数字、引用和结论原样。",
+      "should_trigger": true,
+      "expected_behavior": "Operate on a copy and do not make substantive changes"
+    }
+  ]
+}
