@@ -1,0 +1,30 @@
+{
+  "synthetic": true,
+  "description": "Invented campus supply coverage exercise; no real emergencies or personal data.",
+  "evaluation": {
+    "coverage": "union_of_disjoint_demand_groups",
+    "annual_cost_unit": "CNY/year",
+    "objective": "covered_people_per_10000_CNY_annual_cost",
+    "objective_unit": "people/(10000 CNY/year)",
+    "max_sites": 3,
+    "min_covered_people": 700,
+    "capacity": "unlimited",
+    "cost_rule": "sum_of_selected_fixed_annual_costs"
+  },
+  "groups": [
+    {"id":"G01","people":80}, {"id":"G02","people":60},
+    {"id":"G03","people":100}, {"id":"G04","people":70},
+    {"id":"G05","people":90}, {"id":"G06","people":50},
+    {"id":"G07","people":120}, {"id":"G08","people":80},
+    {"id":"G09","people":60}, {"id":"G10","people":70},
+    {"id":"G11","people":100}, {"id":"G12","people":120}
+  ],
+  "sites": [
+    {"id":"A","annual_cost":40000,"covers":["G01","G02","G03","G04"]},
+    {"id":"B","annual_cost":30000,"covers":["G03","G04","G05","G06"]},
+    {"id":"C","annual_cost":28000,"covers":["G07","G08","G09"]},
+    {"id":"D","annual_cost":65000,"covers":["G09","G10","G11","G12"]},
+    {"id":"E","annual_cost":26000,"covers":["G01","G05","G07","G10"]},
+    {"id":"F","annual_cost":58000,"covers":["G02","G06","G08","G11","G12"]}
+  ]
+}

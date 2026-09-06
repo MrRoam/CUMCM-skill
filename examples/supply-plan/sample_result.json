@@ -1,0 +1,39 @@
+{
+  "synthetic": true,
+  "evaluation": {
+    "coverage": "union_of_disjoint_demand_groups",
+    "annual_cost_unit": "CNY/year",
+    "objective": "covered_people_per_10000_CNY_annual_cost",
+    "objective_unit": "people/(10000 CNY/year)",
+    "max_sites": 3,
+    "min_covered_people": 700,
+    "capacity": "unlimited",
+    "cost_rule": "sum_of_selected_fixed_annual_costs"
+  },
+  "result": {
+    "selected": [
+      "A",
+      "B",
+      "C"
+    ],
+    "covered_groups": [
+      "G01",
+      "G02",
+      "G03",
+      "G04",
+      "G05",
+      "G06",
+      "G07",
+      "G08",
+      "G09"
+    ],
+    "covered_people": 710,
+    "annual_cost_CNY": 98000,
+    "score": 72.44897959183673,
+    "score_exact": "3550/49",
+    "score_unit": "people/(10000 CNY/year)",
+    "feasible": true
+  },
+  "data_sha256": "1746ca35ec5d850d4573000d6282fb678e854835da02b7dc2c864af3d507f221",
+  "evaluator_sha256": "5fb5090210f53417eaa6755fb517f3b6d845aa1b7fc252eca0ad4a590a7feff7"
+}
