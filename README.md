@@ -34,7 +34,7 @@ python tools/install_skills.py install --repo . --revision $skillsRevision --ski
 
 不要让三人各自以当前HEAD代替共同版本。一次交付给出仓库地址和同一个完整commit，再各自核对安装记录。也可以传递已核验的完整Git bundle，在新目录用`git clone <bundle文件> <新目录>`取得本地仓库；从该仓库按共同commit安装，不依赖GitHub网络。
 
-每个Skill目录有`.skill-install.json`记录commit与文件hash。版本一致不代表方法正确；正式使用前至少在你自己的Codex里调用一次确认能发现。三个真实账号的可用性须由三位用户实际确认。
+每个Skill目录有`.skill-install.json`记录commit与文件hash。版本一致不代表方法正确；正式使用前，在你自己的Codex里确认能实际读取`SKILL.md`及所需引用资源。仅出现技能名称还不够；三个真实账号的可用性须由三位用户实际确认。
 
 ## 两个脚本各负责什么
 
