@@ -9,6 +9,8 @@
 
 三个独立Codex通过项目文件和Git协作；无需连接账号，也不用固定谁永远只写代码或论文。某阶段由一人整合共享题意/论文，其余人交付能接用的成果。
 
+一道新题先由一人建立共同项目和首份题意快照，另两人取得同一项目的克隆或完整bundle，再各开任务分支。并行开始前，三人互相说清本轮各自要交什么，并把其他人已认领的工作告诉自己的Codex；独立账号不会自动知道对方正在做什么。不需要另建看板。
+
 ## 三句就能开始
 
 - **接活**：“用 modeling-team 接手这个项目。读取当前题意和快照，找到现在最值得我做的一项工作，明确依赖和编辑范围，然后实际推进。”
@@ -24,11 +26,13 @@ Codex负责整理必要字段与执行命令，学生不必填写技术表格。
 将下面的 `项目目录` 换成你当前项目路径，由Codex运行。首次不带`--apply`会预览；确认已有授权后加`--apply`安装。
 
 ```powershell
-$skillsRevision = git rev-parse HEAD
+$skillsRevision = '三人共同收到并核验的40位commit'
 python tools/install_skills.py install --repo . --revision $skillsRevision --skill math-modeling-coach --skill modeling-team --dest '项目目录/.agents/skills'
 ```
 
 安装后把`install`换成`verify`可检查文件与指定commit一致；更新使用`update`及新的完整commit，添加`--apply`才写入。已有人工修改或同名目录不会被静默覆盖，旧版本保留备份；同名不同位置技能不能视作自动合并。当前个人安装/junction也不会被这个命令改动。
+
+不要让三人各自以当前HEAD代替共同版本。一次交付给出仓库地址和同一个完整commit，再各自核对安装记录。也可以传递已核验的完整Git bundle，在新目录用`git clone <bundle文件> <新目录>`取得本地仓库；从该仓库按共同commit安装，不依赖GitHub网络。
 
 每个Skill目录有`.skill-install.json`记录commit与文件hash。版本一致不代表方法正确；正式使用前至少在你自己的Codex里调用一次确认能发现。三个真实账号的可用性须由三位用户实际确认。
 
