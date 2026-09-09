@@ -1,0 +1,4 @@
+interface:
+  display_name: "建模研究与设计"
+  short_description: "结合人的直觉深入调研与独立思考，共同设计优质模型，讨论对齐后实现"
+  default_prompt: "使用 $modeling-methods 先和我讨论题目需求与建模想法，再深入调研、比较并设计模型，带回方案共同修改，对齐后再实现。"

@@ -1,36 +1,71 @@
 # CUMCM Skills
 
-数学建模竞赛的独立技能。两个 Skill 位于仓库根目录同一级，可以分别安装和调用，使用 modeling-team 不需要先开启 coach。
+供数学建模队伍使用的六个 Codex Skill。**coach 管方向，team 管分工，审题弄懂问题，数据准备依据，建模设计解法，分析检查结论。** 六个技能均可独立使用，不必每次按顺序全部调用。
 
-| 需要做什么 | Skill |
-| --- | --- |
-| 开启一轮教练定向或复盘 | [math-modeling-coach](math-modeling-coach/SKILL.md) |
-| 识别本轮目的并安排分工、帮助队友接手、简明反馈成果 | [modeling-team](modeling-team/SKILL.md) |
+## 让自己的 Codex 下载部署
 
-## 从 GitHub 安装
-
-本页对应 `main` 分支。把下面这句话发给队友的 Codex，即可通过内置 skill-installer 安装分工技能：
+把下面整段复制给自己的 Codex：
 
 ```text
-请使用 $skill-installer 安装 https://github.com/MrRoam/CUMCM-skill/tree/main/modeling-team
+请使用 $skill-installer，从 https://github.com/MrRoam/CUMCM-skill 安装以下六个 Skill：
+math-modeling-coach
+modeling-team
+modeling-framing
+modeling-data
+modeling-methods
+modeling-validation
+
+先读取仓库 main 分支的 README，将 main 解析为一个完整 commit SHA，再用这个相同的 ref 安装六个完整目录及其中的 references、agents 等文件。安装到当前 Codex 使用的个人技能目录，并报告实际路径和 commit。
+如果已有同名技能，先核对来源与本地修改，保留已有修改和备份，再完成本次更新；不要直接覆盖来源不明的内容。
+安装后检查六个 SKILL.md 及其引用文件均可读取，并检查技能发现情况。告诉我哪些已验证、是否需要新开任务或重启刷新。
+本次只部署技能，不启动做题，也不额外安装模型、插件或自定义 agent。
 ```
 
-需要同时安装教练时：
+三位队员需要保持同一版本时，由第一位分享安装报告中的完整 commit SHA；其余两位在提示词中明确“使用这个 commit 作为 ref”，替代各自解析 main。升级时同样指定一个共同版本。
+
+正常新装使用 Codex 自带的 skill-installer，无需安装本仓库专用程序。个人技能目录由各自环境确定，通常为 `$CODEX_HOME/skills` 或 `~/.codex/skills`；下一轮对话即可尝试调用，列表未刷新时新开任务或重启。支持的界面也可直接选择技能。
+
+如果只想在一个比赛项目里使用，让 Codex 将六个**完整目录**放到该项目的 `.agents/skills/` 下。不要只复制 `SKILL.md`，也避免同时在个人和项目目录留下不同版本的同名技能。
+
+没有 skill-installer 时，也可让 Codex 克隆本仓库、固定 commit，再复制六个完整目录到当前环境支持的技能目录，完成相同的文件与发现检查。安装不绑定某一种模型或推理强度；正常使用 coach 不需要另行配置 `modeling_coach` 自定义 agent。
+
+## 六个 Skill 做什么
+
+| Skill | 主要功能 | 目的 |
+| --- | --- | --- |
+| [coach / math-modeling-coach](math-modeling-coach/SKILL.md) | 判断方向、复盘成果，也可按授权统筹推进。 | 决定下一步做什么、为什么值得做。 |
+| [team / modeling-team](modeling-team/SKILL.md) | 设计分工，写清队友及其 Codex 如何接手、最后交什么。 | 让各人独立开工，减少等待、重复劳动和沟通成本。 |
+| [审题 / modeling-framing](modeling-framing/SKILL.md) | 解释各问要求、关键条件和相互关系，寻找有依据的题眼。 | 弄清问题，发现可能改变解题路线的关键点。 |
+| [数据 / modeling-data](modeling-data/SKILL.md) | 提取、检查、记录题干、附件及实验数据，寻找建模线索。 | 知道哪些数据可用、还缺什么、依据在哪里。 |
+| [建模 / modeling-methods](modeling-methods/SKILL.md) | 结合人的想法调研、比较和设计模型，讨论后完成推导与实现。 | 找到适合本题、有数学依据和解释力的解法。 |
+| [分析 / modeling-validation](modeling-validation/SKILL.md) | 实际检查模型、代码和结果，定位异常，核验改进主张。 | 弄清结果是否可信、哪里出错、结论能说到什么程度。 |
+
+## 怎样开始使用
+
+选中对应 Skill，再说明材料在哪里、希望完成什么。以下使用 `$技能名` 写法：
 
 ```text
-请使用 $skill-installer 从 MrRoam/CUMCM-skill 的 main 分支安装 modeling-team 和 math-modeling-coach 两个 Skill。
+$math-modeling-coach 请阅读当前项目进度，复盘已有结果，判断下一步最值得做什么，并解释理由。
+
+$modeling-team 我们三个人这轮要探索第二问的不同解法。请结合当前材料设计能独立推进的分工，讨论确定后写成队友及其 Codex 能接手的说明。
+
+$modeling-framing 请带我审这道题，先讲清各问要得到什么，再解释哪些条件最关键、为什么，以及各问之间有什么关系。
+
+$modeling-data 请整理题干和附件中的已知数据，核对含义、单位和来源，指出缺口，并记录可能影响建模的线索。
+
+$modeling-methods 我对第二问的想法是……请先和我讨论研究方向，再深入调研、比较并提出模型设计；设计讨论确定后再实现。
+
+$modeling-validation 这是当前模型、代码和结果。请检查结果是否符合题目要求，重点核验我们声称的改进，实际做必要检查并指出问题。
 ```
 
-默认安装到个人技能目录（通常为 `~/.codex/skills/`），下一轮对话即可使用。若已有同名技能，先让 Codex 核对来源和本地修改再更新，不直接覆盖个人修改。团队需要固定同一版本时，明确指定同一个完整 commit SHA 作为安装的 ref。
+更多可直接复制的提示词见 [常用提示词（纯文字）](docs/常用提示词.txt)。
 
-也可以取得本仓库后，将所需技能的**整个目录**复制到项目的 `.agents/skills/` 下，保留 `SKILL.md`、`references/` 和已有的 `agents/`。不要只复制一个 `SKILL.md`。
+coach 需要明确启动；只要求点评时完成一轮后关闭，明确要求推进时按授权完成工作。建模默认在研究前对齐方向、实施前讨论设计；已经达成的共识不用重复确认，也可以明确授权自主完成。审题接收已经选定的题目。这六个技能不绑定“建模手、编程手、论文手”的固定身份。
 
-## 使用 modeling-team
+## 组员部署后的核对
 
-- **分工**：“用 $modeling-team 看当前项目。我们这一轮想探索几种不同路线，请结合已有材料安排能各自独立推进的任务，并解释为什么这样分；目的不清楚的地方先集中问我们。”
-- **接手**：“用 $modeling-team 读取仓库里的这份分工说明。我负责其中的 B 任务，先让我和 Codex 都理解共同目的、整体分工、我的起点和交付。”
-- **反馈**：“我这条路线已经研究完了，用 $modeling-team 根据仓库成果整理一段给队友的简明反馈：所得、对共同问题的作用、详细记录位置，以及确实需要的配合。”
+让自己的 Codex 读取六个入口及所需参考文件，并确认它们能够被当前项目发现。若同名技能重复出现，先检查各自安装位置与版本；若已有安装被禁用，检查当前环境的技能设置。最后用上面任一提示词开始实际工作。
 
-探索、排查和精修可以采用不同分法，不固定三人的身份。分工确定后，在项目已有 Markdown 中写清背景、安排及理由、个人任务和交付；详细成果留在项目仓库，反馈避免重复搬运大量材料。模型和数据的专业判断由团队或相应专业技能承担。
+完整目录和技能发现检查只能证明部署完整、入口可用，不能代替真实使用中的模型和结果验证。三个账号的发现与可用性仍需在各自环境确认。比赛期间的工具使用与队内传递按当届官方规定执行。
 
-此仓库存放技能，具体赛题、实验和论文留在团队自己的项目中。安装完整性不代表已验证多人协作效果。
+本仓库只分发技能与使用说明；具体赛题、附件、实验和论文保留在团队自己的项目中。历史资料的来源索引用于追溯，使用所需的参考说明已经随技能打包，无需维护者的个人文件目录。

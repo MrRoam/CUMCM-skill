@@ -1,0 +1,6 @@
+interface:
+  display_name: "建模验证与诊断"
+  short_description: "检查已有模型、代码与结果，定位错误并给出证据和修复方向"
+  default_prompt: "用 $modeling-validation 检查当前模型、代码和结果，实际核验关键主张，说明证据、错误位置及修复方向。"
+policy:
+  allow_implicit_invocation: true

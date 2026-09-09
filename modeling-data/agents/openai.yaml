@@ -1,0 +1,6 @@
+interface:
+  display_name: "数学建模数据提取、检查与记录"
+  short_description: "提取并核对题干与实验数据，记录来源和待补全信息，发现可交给建模的线索"
+  default_prompt: "请用 $modeling-data 提取当前题干、附件或实验中的数据，检查含义与缺口，记录已知数据的来源位置；缺失或模糊的信息明确提出，补全后更新。实验数据记到对应 experiment，有建模线索时连同证据交给 modeling-methods。"
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,6 @@
+interface:
+  display_name: "数学建模审题"
+  short_description: "解释关键条件和缺失信息对解题的影响，抓住有依据的题眼，明确各问目标与依赖"
+  default_prompt: "请用 $modeling-framing 审题，先明确各问要解决什么，再重点解释哪些条件、量或关系会改变解题方向，为什么重要；区分有依据的题眼与待确认线索，说明缺失信息的实际影响，具体数据与出处沿用 modeling-data 的记录。"
+policy:
+  allow_implicit_invocation: true

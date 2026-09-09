@@ -1,6 +1,6 @@
 interface:
   display_name: "数学建模教练"
-  short_description: "显式启动一轮数学建模定向、审查、提炼与下一步行动建议"
-  default_prompt: "Use $math-modeling-coach for one coach round on the current mathematical-modeling work, then stop."
+  short_description: "保留建模判断与经验，按需点评或统筹专业技能，与人共同推进明确任务"
+  default_prompt: "使用 $math-modeling-coach 接上当前项目；按我要求给出一轮点评，或选择专业技能推进任务并带回可检查结果。"
 policy:
   allow_implicit_invocation: false
