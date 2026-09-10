@@ -13,6 +13,19 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 
 
+def read_pdf_pages(path: Path) -> tuple[list[str], str]:
+    try:
+        import fitz  # type: ignore
+        with fitz.open(path) as document:
+            return [page.get_text("text") for page in document], "PyMuPDF"
+    except ImportError:
+        try:
+            from pypdf import PdfReader  # type: ignore
+        except ImportError as exc:
+            raise RuntimeError("PDF extraction requires PyMuPDF or pypdf") from exc
+        return [page.extract_text() or "" for page in PdfReader(path).pages], "pypdf"
+
+
 def read_text(path: Path) -> tuple[str, dict]:
     suffix = path.suffix.lower()
     meta: dict[str, object] = {"file": str(path.resolve()), "type": suffix}
@@ -35,21 +48,8 @@ def read_text(path: Path) -> tuple[str, dict]:
         meta["paragraphs_extracted"] = len(paragraphs)
         return "\n\n".join(paragraphs), meta
     if suffix == ".pdf":
-        try:
-            import fitz  # type: ignore
-            with fitz.open(path) as document:
-                pages = [page.get_text("text") for page in document]
-                meta["pages"] = len(document)
-            meta["pdf_extractor"] = "PyMuPDF"
-        except ImportError:
-            try:
-                from pypdf import PdfReader  # type: ignore
-            except ImportError as exc:
-                raise RuntimeError("PDF extraction requires PyMuPDF or pypdf") from exc
-            reader = PdfReader(path)
-            pages = [page.extract_text() or "" for page in reader.pages]
-            meta["pages"] = len(reader.pages)
-            meta["pdf_extractor"] = "pypdf"
+        pages, meta["pdf_extractor"] = read_pdf_pages(path)
+        meta["pages"] = len(pages)
         meta["first_page_text"] = pages[0][:5000] if pages else ""
         return "\n\n".join(pages), meta
     raise ValueError(f"Unsupported file type: {suffix}")
@@ -77,10 +77,58 @@ def exact_duplicate_paragraphs(text: str) -> list[dict]:
     ][:20]
 
 
-def audit(path: Path, identity_terms: list[str]) -> dict:
+def audit(path: Path, identity_terms: list[str], *, full_draft: bool = False,
+          body_start_page: int | None = None, body_end_page: int | None = None,
+          target_body_pages: tuple[int, int] | None = None) -> dict:
+    if (body_start_page is None) != (body_end_page is None):
+        raise ValueError("Provide both body-start-page and body-end-page.")
+    if body_start_page is not None:
+        if path.suffix.lower() != ".pdf":
+            raise ValueError("Physical body-page ranges require a rendered PDF.")
+        if body_start_page < 1 or body_end_page < body_start_page:
+            raise ValueError("Body pages must be positive, inclusive and ordered.")
+    if target_body_pages is not None:
+        if len(target_body_pages) != 2 or target_body_pages[0] < 1 or target_body_pages[1] < target_body_pages[0]:
+            raise ValueError("Target body range must have two positive ordered values.")
     text, meta = read_text(path)
     normalized = compact(text)
     findings: list[dict] = []
+    length_diagnostics: dict = {}
+    if full_draft or body_start_page is not None or target_body_pages is not None:
+        length_diagnostics = {
+            "target_body_pages": list(target_body_pages) if target_body_pages else None,
+            "page_numbering": "one-based physical PDF pages, inclusive",
+            "body_pages": None,
+            "status": "unmeasured",
+        }
+        if body_start_page is None:
+            add(findings, "draft_length", "manual",
+                "未提供已核对的正文页范围；不将PDF总页数当成正文篇幅。")
+        else:
+            pages, _ = read_pdf_pages(path)
+            if body_end_page > len(pages):
+                raise ValueError("Body-page range exceeds PDF page count.")
+            body = "\n".join(pages[body_start_page - 1:body_end_page])
+            count = body_end_page - body_start_page + 1
+            length_diagnostics.update({
+                "body_start_page": body_start_page,
+                "body_end_page": body_end_page,
+                "body_pages": count,
+                "body_characters_compact": len(compact(body)),
+                "body_han_characters": len(re.findall(r"[\u4e00-\u9fff]", body)),
+                "status": "measured_without_target",
+            })
+            if target_body_pages:
+                low, high = target_body_pages
+                status = "below_target" if count < low else "above_target" if count > high else "within_target"
+                length_diagnostics["status"] = status
+                if status != "within_target":
+                    add(findings, "draft_length", "recommended",
+                        "正文篇幅偏离工作目标；检查论证展开、未利用证据及排版。工作目标不是全国硬性规则，不得靠凑页数或缩小字号修复。",
+                        {"actual": count, "target": [low, high], "status": status})
+        if full_draft:
+            add(findings, "draft_depth", "manual",
+                "完整成稿仍需逐问检查推导、求解与选择依据、结果解释和验证；结构齐全或页数达标不能证明论证充分。请记录正文位置及未利用证据去向。")
 
     if not re.search(r"摘\s*要", text):
         add(findings, "structure", "manual", "未检出摘要标记；请确认提取或结构。")
@@ -147,6 +195,7 @@ def audit(path: Path, identity_terms: list[str]) -> dict:
     severity_counts = Counter(item["severity"] for item in findings)
     return {
         "metadata": meta,
+        "length_diagnostics": length_diagnostics,
         "summary": {
             "characters_compact": len(normalized),
             "modules": module_presence,
@@ -170,10 +219,19 @@ def main() -> int:
     parser.add_argument("manuscript", type=Path)
     parser.add_argument("--identity-term", action="append", default=[], help="Exact identity term to flag; repeatable")
     parser.add_argument("--output", type=Path, help="Optional JSON output path")
+    parser.add_argument("--full-draft", action="store_true", help="Request depth and length review diagnostics, not a quality certification")
+    parser.add_argument("--body-start-page", type=int, help="Verified first body page, one-based physical PDF page")
+    parser.add_argument("--body-end-page", type=int, help="Verified last body page, inclusive; use the planned counting convention")
+    parser.add_argument("--target-body-pages", nargs=2, type=int, metavar=("MIN", "MAX"), help="Working body-page range, not an official rule")
     args = parser.parse_args()
     if not args.manuscript.is_file():
         parser.error(f"File not found: {args.manuscript}")
-    result = audit(args.manuscript, args.identity_term)
+    try:
+        result = audit(args.manuscript, args.identity_term, full_draft=args.full_draft,
+                       body_start_page=args.body_start_page, body_end_page=args.body_end_page,
+                       target_body_pages=tuple(args.target_body_pages) if args.target_body_pages else None)
+    except ValueError as exc:
+        parser.error(str(exc))
     payload = json.dumps(result, ensure_ascii=False, indent=2)
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

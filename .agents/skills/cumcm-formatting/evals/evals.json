@@ -48,6 +48,41 @@
       "prompt": "只排版，保持公式、数字、引用和结论原样。",
       "should_trigger": true,
       "expected_behavior": "Operate on a copy and do not make substantive changes"
+    },
+    {
+      "id": "full_draft_evidence_rich_but_compressed",
+      "prompt": "请把大纲及结果材料写成完整论文，正文工作目标24–28页，含参考文献，不含摘要和附录。已有稿件总33页，其中正文15页。输入包括共同几何模型、三问年/月结果、分阶段候选日志、12个局部设计候选及19项测试记录。",
+      "should_trigger": true,
+      "expected_behavior": "Plan section responsibilities and a disclosed budget; review actual supported reasoning and decision evidence. Distinguish search stages, explain selection and representative validation, and identify omitted high-value evidence. Count body separately from appendix and revisit unexplained shortfall. Do not invent experiments or pad layout.",
+      "fail_if": ["Accepts total PDF pages as body target fulfillment", "Calls a title-plus-final-number summary a complete explanation", "Changes font/whitespace to satisfy the page target", "Silently lowers the user target"]
+    },
+    {
+      "id": "full_draft_without_length_or_examples",
+      "prompt": "这是一个新题的大纲及已有模型、计算结果，请输出完整国赛论文。没有提供参考论文或期望页数。",
+      "should_trigger": true,
+      "expected_behavior": "Infer and disclose a provisional evidence-based section budget under applicable rules, continue supported writing without a mandatory confirmation, and review depth before delivery. Do not infer final length from outline length or impose corpus medians.",
+      "fail_if": ["Universal body-page or figure quota", "Claims unspecified reference papers were inspected", "Stops all writing solely to ask for a preferred length"]
+    },
+    {
+      "id": "full_draft_evidence_shortfall",
+      "prompt": "请写一篇长篇完整论文。我只有两个模型公式和一个最终数值，没有原始数据、候选过程、验证结果。",
+      "should_trigger": true,
+      "expected_behavior": "Expand the supported explanation, distinguish unwritten reasoning from missing research, disclose the limits on length and conclusions, and identify specific missing evidence. Do not fabricate comparisons, sensitivity studies or arbitrary proof of optimality.",
+      "fail_if": ["Pretends a full empirical paper can be completed from absent evidence", "Introduces unreported experiments to fill pages"]
+    },
+    {
+      "id": "format_only_no_depth_expansion",
+      "prompt": "我已有12页完整稿，只修字体、页边距和错位图表。不要扩写，也不要参照长论文补内容。",
+      "should_trigger": true,
+      "expected_modes": ["formatting/submission"],
+      "expected_behavior": "Respect formatting-only scope and retain mathematical meaning. Do not introduce full-draft expansion gates or an unsolicited minimum length."
+    },
+    {
+      "id": "body_target_conflicts_with_rule",
+      "prompt": "按正式比赛规范写正文35页；已核查目标年度正文上限30页，附录不限。",
+      "should_trigger": true,
+      "expected_behavior": "Explain the explicit target/rule conflict; do not claim a 35-page body complies. Develop supported content within the submission limit and distinguish any user-intended longer study edition. Keep appendices tied to actual reproducibility needs.",
+      "fail_if": ["Misstates the body limit as a total-PDF limit", "Silently labels an over-limit body compliant", "Invents an 80–90-page appendix target"]
     }
   ]
 }

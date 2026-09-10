@@ -14,16 +14,16 @@ Before drafting, collect or construct only what the project needs:
 | Result record | value/pattern, condition, unit, precision, producing file/code | block strong prose claims that lack a traceable result |
 | Symbol table | symbol, meaning, unit, scope, first definition | reconcile collisions before drafting dependent sections |
 | Visual plan | question, data, form, caption, conclusion, output file | create only when it adds evidence or compresses explanation |
-| Style target | language, audience, tone, length, file format | infer conservatively from the existing manuscript |
+| Style target | task type; problem year and rule year; page-count convention; working length range; readable layout; output format | for a full draft, infer and disclose a section budget from the task and evidence, not the outline length; see full-draft-depth.md |
 
 ## Stage gates
 
 1. **Material gate:** identify usable evidence, conflicts, and missing inputs.
-2. **Argument gate:** create the question–claim–evidence map and section dependencies.
-3. **Draft gate:** draft only sections whose evidence and symbols are ready.
+2. **Argument gate:** create the question–claim–evidence map, section dependencies, and (for a complete paper) the scope and section budget described in [full-draft-depth.md](full-draft-depth.md).
+3. **Draft gate:** draft supported sections, then review their reasoning and evidence coverage against that plan. Track supported-but-unwritten content separately from missing scientific evidence; do not pass this gate solely because all headings exist.
 4. **Integration gate:** reconcile terminology, assumptions, variables, numbers, citations, and cross-references.
 5. **Abstract gate:** write the abstract from stable body results.
-6. **Delivery gate:** run format and submission checks, render, and visually inspect.
+6. **Delivery gate:** run format and submission checks, render, and visually inspect. For a complete draft, compare actual section/body/appendix scope with the budget and resolve unexplained compression or expansion through the depth review before declaring completion.
 
 Each gate should leave a small receipt: inputs used, output created, unresolved items, and the next allowed stage. Do not repeat the full reasoning history.
 
@@ -31,8 +31,8 @@ Each gate should leave a small receipt: inputs used, output created, unresolved 
 
 A single request may combine multiple internal tasks. Select them from the requested outcome rather than invoking every mode:
 
-- **Outline supplied, evidence supplied:** audit the map, reconcile symbols, draft approved sections, integrate, refresh abstract, then audit.
-- **Outline supplied, evidence incomplete:** map missing evidence and draft only supported passages.
+- **Outline supplied, evidence supplied:** audit the map, establish a working scope and section budget, reconcile symbols, expand approved reasoning and evidence, review depth, integrate, refresh abstract, then audit.
+- **Outline supplied, evidence incomplete:** distinguish missing evidence from unwritten explanation, draft supported passages, and disclose any resulting limit on depth or target length. Do not invent studies to meet a page target.
 - **Draft supplied:** review claims and structure first; revise only the scope authorized by the user.
 - **Formatting only:** load official rules, preserve content, format a copy, render, inspect, and report.
 - **Visualization only:** verify data and intended claim, choose the visual, create reproducible outputs, and audit figure–text consistency.

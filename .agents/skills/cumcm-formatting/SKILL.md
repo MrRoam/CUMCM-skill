@@ -20,13 +20,15 @@ Choose only the modes needed by the request:
 
 For a multi-stage request, read [workflow-and-routing.md](references/workflow-and-routing.md). For a narrow request, read only the references named below.
 
+An outline is not an existing manuscript. A request to turn an outline into a paper selects drafting/revision plus formatting, unless the user explicitly asks to preserve the outline as-is. For a complete paper, read [full-draft-depth.md](references/full-draft-depth.md): establish the length scope and section budget, expand supported reasoning, and review evidence coverage before treating the draft as complete. Do not infer final length from the outline's length.
+
 ## Route supporting guidance
 
 - Read [official-format.md](references/official-format.md) for format, anonymity, appendix, support-material, AI-disclosure, or final-submission work. Verify that no newer official rule or local competition notice supersedes it.
 - Read [writing-and-review.md](references/writing-and-review.md) for outlines, sections, paragraphs, abstracts, citations, drafting, or substantive review.
 - Read [assumptions-and-validation.md](references/assumptions-and-validation.md) when assumptions, symbols, parameters, sensitivity, error, robustness, or model limitations are in scope.
 - Read [visuals.md](references/visuals.md) for figures, tables, diagrams, palettes, captions, or reproducible plotting.
-- Read [evidence-boundaries.md](references/evidence-boundaries.md) only when deciding whether a convention is a requirement, a sample tendency, or an optional recommendation.
+- Read [evidence-boundaries.md](references/evidence-boundaries.md) when calibrating a complete paper's scope or comparing sample papers, and when distinguishing requirements from conventions. Its corpus statistics are provisional context unless their underlying records have been verified, never length or figure quotas.
 
 ## Non-negotiable behavior
 
@@ -51,5 +53,7 @@ Report results under three labels:
 - **Manual decisions:** missing evidence, ambiguous formulas, disputed interpretations, or author-owned scientific judgments.
 
 For a complete manuscript or final file, provide the output path, rules version/date, checks actually run, unresolved items, and whether the final PDF was rendered and visually inspected. A successful file conversion alone is not completion.
+
+For a complete draft, also report abstract/body/appendix pages separately, the planning range and its counting convention, substantive coverage gaps, and any material evidence left outside the manuscript with its destination or reason. Passing structural or page-limit checks does not establish sufficient scientific explanation.
 
 Use [audit_manuscript.py](scripts/audit_manuscript.py) for a reproducible text/content scan and [audit_submission.py](scripts/audit_submission.py) for submission-package checks. Treat their findings as diagnostics; visually inspect formulas, layout, figures, and ambiguous matches.

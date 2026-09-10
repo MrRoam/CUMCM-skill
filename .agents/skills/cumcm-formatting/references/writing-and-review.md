@@ -33,7 +33,7 @@ Choose organization from dependency:
 - Use a model-process structure when several subproblems share data, state variables, or one core model.
 - Use a mixed structure when common foundations lead to question-specific methods or results.
 
-Do not repeat a full “analysis–model–solution” template under every question when most material is shared.
+Do not repeat a full “analysis–model–solution” template under every question when most material is shared. Each question must still explain its own decisions, candidate comparisons, result interpretation, and applicable validation. Consolidating a common model does not justify dropping question-specific reasoning.
 
 ## Section responsibilities
 
@@ -41,14 +41,14 @@ Do not repeat a full “analysis–model–solution” template under every ques
 - **Problem analysis:** explain dependencies, difficulties, and planned transformations without prematurely claiming results.
 - **Data/preprocessing:** record sources, cleaning, exclusions, transformations, and their effect on interpretation.
 - **Model choice/building:** explain why the method fits, define variables and constraints, and connect equations to the problem.
-- **Solution:** give enough algorithm, parameter, convergence, or implementation detail to reproduce the result; move full code to support material.
+- **Solution:** explain inputs, outputs, algorithm steps, parameters, search/termination rules and relevant candidate selection at the depth specified in [full-draft-depth.md](full-draft-depth.md). Place full code in appendices/support as required by the applicable rules; pointing to a code file is not a substitute for explaining the method.
 - **Results:** answer the question with conditions, units, precision, and interpretation; do not write only “results are shown below.”
 - **Validation:** test a risk that could change the conclusion, not an arbitrary parameter merely to include a sensitivity section.
 - **Evaluation:** connect strengths to evidence, limitations to boundaries, and proposed improvements to those limitations.
 
 ## Paragraphs and language
 
-Give each paragraph one primary job: define, justify, derive, solve, compare, interpret, validate, or evaluate. A useful internal shape is `main point → basis/action → consequence`. Length follows function; do not force a word target.
+Give each paragraph one primary job: define, justify, derive, solve, compare, interpret, validate, or evaluate. A useful internal shape is `main point → basis/action → consequence`. Length follows function: use the agreed or disclosed working range to detect underdevelopment, never to justify filler. Concision removes repetition, not necessary derivation, decision evidence, or interpretation. A full draft must not silently become an executive summary.
 
 Use concrete verbs such as define, establish, estimate, compare, verify, obtain, and indicate. Qualify “significant,” “optimal,” “accurate,” “robust,” and “effective” with a metric, baseline, test, or scope. `本文` or `我们` may identify an author action but must not replace the logical subject.
 
@@ -75,7 +75,7 @@ Map every abstract result to a body location and check numerical equality, units
 Review in this order so later polish does not hide upstream gaps:
 
 1. unsupported or conflicting claims;
-2. unanswered subproblems and broken dependencies;
+2. unanswered subproblems, broken dependencies, and supported reasoning/evidence left unexplained (use the full-draft depth review);
 3. assumptions, symbols, and formula meaning;
 4. result interpretation and validation;
 5. abstract–body, figure–text, and citation consistency;
