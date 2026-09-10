@@ -1,0 +1,4 @@
+interface:
+  display_name: "说人话（向我汇报）"
+  short_description: "完成正常调研和分析后，组织成重点明确、容易读懂的对话汇报，不降低研究深度"
+  default_prompt: "请用 $report-to-user，在正常完成调研和分析后，向我汇报结论、理由和需要我注意的事项。"
