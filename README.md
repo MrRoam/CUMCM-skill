@@ -1,6 +1,6 @@
 # CUMCM Skills
 
-供数学建模队伍使用的六个核心 Codex Skill，以及一个选用的“说人话”Skill。**coach 管方向，team 管分工，审题弄懂问题，数据准备依据，建模设计解法，分析检查结论；说人话让汇报容易读懂。** 各技能均可独立使用，不必每次按顺序全部调用。
+供数学建模队伍使用的六个核心 Codex Skill，以及选用的“说人话”和“运行回放”Skill。**coach 管方向，team 管分工，审题弄懂问题，数据准备依据，建模设计解法，分析检查结论；说人话让汇报容易读懂，运行回放展示每步发生了什么。** 各技能均可独立使用，不必每次按顺序全部调用。
 
 ## 让自己的 Codex 下载部署
 
@@ -45,6 +45,29 @@ modeling-validation
 
 明确更新示例：`请更新我本地的 report-to-user Skill：以后汇报先用一句话说结论，必要术语先解释，避免连续堆砌缩写。`
 
+## 选装“运行回放”：下载后直接使用
+
+把这段发给队友的 Codex：
+
+```text
+请使用 $skill-installer，从 https://github.com/MrRoam/CUMCM-skill 的 main 分支安装 run-replay。先把 main 解析为完整 commit SHA，按同一个 ref 安装完整 run-replay 目录（包含 scripts、assets、references、agents），不要只下载 SKILL.md。已有同名目录先检查本地修改。安装后用 Python 3.10 或更新版本运行 scripts/test_replay.py，并报告版本和安装路径。
+```
+
+安装后使用：`$run-replay 读取这个运行目录，生成可以逐步查看动作、反馈、定位范围和决策理由的全流程回放。`
+
+仅需 **Python 3.10+，无第三方 Python 包**。Q3公开状态重建代码已经随技能打包，无需维护者的本地文件或另一个实验仓库。可读取原始 `actions.jsonl` 运行目录，或已整理的 `view_data.json`；具体格式见技能内的数据说明。
+
+不通过 Codex 也可以生成离线网页。在完整技能目录中执行：
+
+```text
+python scripts/adapt_q3.py --run <本次运行目录> --output replay-data.json --title <算法名称>
+python scripts/build_replay.py --input replay-data.json --output replay.html --standalone
+```
+
+双击 `replay.html` 可在现代浏览器中离线操作，也可把这一文件发给队友。无需服务器或插件。已有 `view_data.json` 时跳过适配步骤；Q3旧版数据缺少场景参数时可显式加 `--q3-defaults`。
+
+对话内显示使用当前对话的可视化目录；普通浏览器版本使用 `--standalone`。两种输出都保留逐条动作、停留分组、目标关注、局部放大和真值开关，失败或中断的运行不会被标为全清。
+
 ## 各个 Skill 做什么
 
 | Skill | 主要功能 | 目的 |
@@ -56,6 +79,7 @@ modeling-validation
 | [建模 / modeling-methods](modeling-methods/SKILL.md) | 结合人的想法调研、比较和设计模型，讨论后完成推导与实现。 | 找到适合本题、有数学依据和解释力的解法。 |
 | [分析 / modeling-validation](modeling-validation/SKILL.md) | 实际检查模型、代码和结果，定位异常，核验改进主张。 | 弄清结果是否可信、哪里出错、结论能说到什么程度。 |
 | [说人话 / report-to-user（选用）](report-to-user/SKILL.md) | 正常完成研究后，把汇报组织得重点清楚、容易理解；按明确要求更新个人习惯。 | 降低阅读负担，同时保留研究深度、关键事实和不确定性。 |
+| [运行回放 / run-replay（选用）](run-replay/SKILL.md) | 将单次日志制作成可逐步操作的全流程示意，可离线打开。 | 看清每步动作、反馈、目标状态及决策依据。 |
 
 ## 怎样开始使用
 

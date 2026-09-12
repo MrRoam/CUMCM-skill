@@ -1,0 +1,93 @@
+<div id="run-replay-__REPLAY_ID__">
+  <h3>__REPLAY_TITLE__</h3>
+  <div class="viz-controls">
+    <label class="form-label">查看方式 <select class="form-select" data-ui="mode"><option value="stops">按停留与清除看流程</option><option value="actions">逐条动作（含每个频道）</option></select></label>
+    <label class="form-check" data-ui="truthLabel"><input class="form-check-input" type="checkbox" data-ui="truth" checked><span class="form-check-label">讲解视角：真实目标（算法不可见）</span></label>
+  </div>
+  <div class="viz-row tabular-nums"><span data-ui="counter"></span><span data-ui="stats"></span></div>
+  <div data-ui="plot"></div>
+  <div class="viz-row text-small"><span data-ui="agentLegend"></span><span>◇ 真值</span><span>○ 估计位置</span><span>× 已清除</span><span>填色：当前可能范围；细轮廓：上一步范围</span></div>
+  <div class="viz-controls">
+    <button class="btn" data-ui="prev" type="button">上一步</button><button class="btn btn-primary" data-ui="next" type="button">下一步</button><button class="btn" data-ui="play" type="button">自动演示</button>
+    <label class="form-label">关注频道 <select class="form-select" data-ui="channel"></select></label>
+    <label class="form-check"><input class="form-check-input" data-ui="zoom" type="checkbox"><span class="form-check-label">放大当前目标</span></label>
+  </div>
+  <label class="form-label"><span data-ui="progress"></span><input class="form-range" data-ui="slider" type="range" min="0" value="0" step="1"></label>
+  <div data-ui="detail" aria-live="polite"><strong data-ui="title"></strong><div data-ui="action"></div><div data-ui="feedback"></div><div data-ui="why"></div><div data-ui="focus" class="text-small"></div></div>
+  <details data-ui="decision" hidden><summary>日志中的候选成本比较</summary><div class="table-responsive"><table class="table table-sm"><thead><tr><th>候选</th><th>坐标</th><th>频道数</th><th>预计剩余/分钟</th></tr></thead><tbody data-ui="options"></tbody></table></div></details>
+  <div class="text-small" data-ui="case"></div>
+  <script type="application/json" id="run-replay-data-__REPLAY_ID__">__REPLAY_DATA__</script>
+</div>
+<style>
+#run-replay-__REPLAY_ID__ [data-ui="plot"] {width:100%;}
+#run-replay-__REPLAY_ID__ .scene {display:block;width:100%;}
+#run-replay-__REPLAY_ID__ .scene text {fill:var(--foreground);font-size:12px;}
+#run-replay-__REPLAY_ID__ [data-ui="detail"] {display:grid;gap:6px;margin:12px 0;}
+</style>
+<script>
+(() => {
+const root=document.getElementById('run-replay-__REPLAY_ID__');
+const payload=JSON.parse(document.getElementById('run-replay-data-__REPLAY_ID__').textContent),data=payload.data;
+for(const f of data.frames)f.channels=f.channels.map(i=>payload.channelPool[i]);
+const ui={};root.querySelectorAll('[data-ui]').forEach(e=>ui[e.dataset.ui]=e);
+const cfg=data.scene,unit=cfg.unit||'米',agent=cfg.agent_label||'机器狗',truth=data.case.sources||[];
+const color={dog:'var(--viz-series-1)',range:'var(--viz-series-2)',clear:'var(--viz-series-3)',truth:'var(--muted-foreground)',line:'var(--border)'};
+let cursor=0,mode='stops',chosen=0,playing=null,lastStep=null;
+const none={start:0,end:0,title:'记录开始',action:`${agent}位于 (${data.frames[0].q.join(', ')}) ${unit}。`,feedback:'显示本次记录的初始公开状态。',why:data.initial_why,focus:0};
+const groups=()=>mode==='stops'?[none,...data.groups]:[none,...data.single];
+const row=(f,j)=>f.channels.find(c=>c.j===j),fmt=n=>Number(n).toFixed(1);
+function svg(tag,attrs={},text=''){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);if(text)e.textContent=text;return e;}
+function stop(){if(playing)clearInterval(playing);playing=null;ui.play.textContent='自动演示';}
+function draw(){
+ const g=groups()[cursor],f=data.frames[g.end],before=data.frames[Math.max(0,g.start-1)],active=row(f,chosen),old=row(before,chosen);
+ const shape=active?.status==='found'?active:(active?.status==='cleared'&&old?.status==='found'?old:null);
+ const w=Math.max(280,ui.plot.clientWidth),h=Math.min(540,w*.78+35),m={l:55,r:22,t:28,b:38};
+ const all=data.frames.map(x=>x.q).concat(data.frames.flatMap(x=>x.channels.filter(c=>c.center).map(c=>c.center)));
+ let cx=0,cy=0,span=cfg.domain_radius?cfg.domain_radius*1.16:Math.max(100,...all.flatMap(q=>q.map(Math.abs)))*1.16;
+ span=Math.max(span,...data.frames.map(x=>Math.max(Math.abs(x.q[0]),Math.abs(x.q[1]))*1.1));
+ if(ui.zoom.checked&&chosen){const center=shape?.center||f.q;cx=(center[0]+f.q[0])/2;cy=(center[1]+f.q[1])/2;span=Math.max(65,(shape?.radius||25)*1.35,Math.hypot(center[0]-f.q[0],center[1]-f.q[1])*.75);}
+ const scale=Math.min((w-m.l-m.r)/(2*span),(h-m.t-m.b)/(2*span)),mx=(w+m.l-m.r)/2,my=(h+m.t-m.b)/2;
+ const X=x=>mx+(x-cx)*scale,Y=y=>my-(y-cy)*scale,pts=ps=>ps.map(q=>`${X(q[0])},${Y(q[1])}`).join(' ');
+ const s=svg('svg',{class:'scene',viewBox:`0 0 ${w} ${h}`,role:'img','aria-label':`${g.title}；累计${fmt(f.time/60)}分钟`}),defs=svg('defs');
+ const clip=svg('clipPath',{id:'clip-__REPLAY_ID__'});clip.append(svg('rect',{x:m.l,y:m.t,width:w-m.l-m.r,height:h-m.t-m.b}));defs.append(clip);s.append(defs);
+ const scene=svg('g',{'clip-path':'url(#clip-__REPLAY_ID__)'});s.append(scene);
+ const placed=[];function label(x,y,text){const width=Math.max(24,text.length*7);for(const[dx,dy]of [[8,-8],[8,17],[-width-8,-8],[-width-8,17],[8,31]]){const b={x:x+dx,y:y+dy-12,w:width,h:15};if(b.x<m.l||b.x+width>w-m.r||b.y<m.t||b.y+15>h-m.b)continue;if(placed.some(a=>!(b.x+b.w+3<a.x||a.x+a.w+3<b.x||b.y+b.h+3<a.y||a.y+a.h+3<b.y)))continue;placed.push(b);scene.append(svg('text',{x:b.x,y:b.y+12},text));break;}}
+ for(const v of [cx-span*.7,cx,cx+span*.7]){scene.append(svg('line',{x1:X(v),x2:X(v),y1:m.t,y2:h-m.b,stroke:color.line,'stroke-width':.7}));s.append(svg('text',{x:X(v),y:h-19,'text-anchor':'middle'},String(Math.round(v))));}
+ for(const v of [cy-span*.7,cy,cy+span*.7]){scene.append(svg('line',{x1:m.l,x2:w-m.r,y1:Y(v),y2:Y(v),stroke:color.line,'stroke-width':.7}));s.append(svg('text',{x:m.l-6,y:Y(v)+4,'text-anchor':'end'},String(Math.round(v))));}
+ s.append(svg('text',{x:w-m.r,y:h-3,'text-anchor':'end'},`x / ${unit}`),svg('text',{x:9,y:16},`y / ${unit}`));
+ if(cfg.domain_radius)scene.append(svg('circle',{cx:X(0),cy:Y(0),r:cfg.domain_radius*scale,fill:'none',stroke:color.truth,'stroke-width':1.2}));
+ const histories=data.actions.slice(0,g.end).map((a,i)=>({...a,step:i+1})).filter(a=>a.kind==='measure'&&a.channel===chosen);
+ for(const a of histories){const x=X(a.position[0]),y=Y(a.position[1]);if(a.result==='no_signal'&&cfg.coverage_radius)scene.append(svg('circle',{cx:x,cy:y,r:cfg.coverage_radius*scale,fill:color.truth,'fill-opacity':.035,stroke:color.truth,'stroke-opacity':.25,'stroke-dasharray':'3 4'}));
+ if(a.result==='direction'&&Number.isFinite(a.bearing)&&cfg.angle_error_deg&&cfg.bearing_length){const t=a.bearing*Math.PI/180,e=cfg.angle_error_deg*Math.PI/180,q=a.position,L=cfg.bearing_length;scene.append(svg('polygon',{points:pts([q,[q[0]+L*Math.cos(t-e),q[1]+L*Math.sin(t-e)],[q[0]+L*Math.cos(t+e),q[1]+L*Math.sin(t+e)]]),fill:color.range,'fill-opacity':.07,stroke:color.range,'stroke-opacity':.3,'stroke-width':.8}));}
+ scene.append(svg('circle',{cx:x,cy:y,r:4,fill:'none',stroke:color.range,'data-tooltip':`C${chosen} 第${a.step}步：${a.result}`}));if(histories.length<8||ui.zoom.checked)label(x,y,`测${a.step}`);}
+ if(old?.polygon&&active?.status==='found')scene.append(svg('polygon',{points:pts(old.polygon),fill:'none',stroke:color.truth,'stroke-width':1}));
+ if(shape?.polygon)scene.append(svg('polygon',{points:pts(shape.polygon),fill:color.range,'fill-opacity':.25,stroke:color.range,'stroke-width':2}));
+ const path=[data.frames[0].q];for(const a of data.actions.slice(0,g.end))if(Math.hypot(a.position[0]-path.at(-1)[0],a.position[1]-path.at(-1)[1])>.01)path.push(a.position);
+ scene.append(svg('polyline',{points:pts(path),fill:'none',stroke:color.dog,'stroke-width':1.7,'stroke-opacity':.5}));
+ if(g.start)scene.append(svg('line',{x1:X(before.q[0]),y1:Y(before.q[1]),x2:X(f.q[0]),y2:Y(f.q[1]),stroke:color.dog,'stroke-width':3}));
+ function cross(q,text){const x=X(q[0]),y=Y(q[1]);scene.append(svg('path',{d:`M${x-4},${y-4}l8,8m-8,0l8,-8`,stroke:color.clear,'stroke-width':2}));label(x,y,text);}
+ if(ui.truth.checked){for(const t of truth){const x=X(t.position[0]),y=Y(t.position[1]);if(row(f,t.channel)?.status==='cleared')cross(t.position,`C${t.channel}`);else{scene.append(svg('polygon',{points:`${x},${y-5} ${x+5},${y} ${x},${y+5} ${x-5},${y}`,fill:'none',stroke:color.truth,'data-tooltip':`真值C${t.channel}；算法不可见`}));label(x,y,`C${t.channel}`);}}}
+ else for(const a of data.actions.slice(0,g.end).filter(a=>a.kind==='clear'&&a.result==='success'))cross(a.position,`C${a.channel}已清除`);
+ for(const c of f.channels.filter(c=>c.status==='found'&&c.center)){const x=X(c.center[0]),y=Y(c.center[1]);scene.append(svg('circle',{cx:x,cy:y,r:c.j===chosen?6:3.5,fill:'var(--background)',stroke:color.range,'stroke-width':1.7,'data-tooltip':`C${c.j}：包围半径${c.radius==null?'未记录':fmt(c.radius)}`}));if(!ui.truth.checked||c.j===chosen)label(x,y,`估C${c.j}`);}
+ if(cfg.clear_radius&&g.start&&data.actions.slice(g.start-1,g.end).some(a=>a.kind==='clear'))scene.append(svg('circle',{cx:X(f.q[0]),cy:Y(f.q[1]),r:cfg.clear_radius*scale,fill:color.clear,'fill-opacity':.1,stroke:color.clear}));
+ const dog=svg('rect',{x:X(f.q[0])-5,y:Y(f.q[1])-5,width:10,height:10,fill:color.dog});scene.append(dog);label(X(f.q[0]),Y(f.q[1]),agent);
+ ui.plot.replaceChildren(s);if(lastStep===g.start-1&&g.start&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){const dx=X(before.q[0])-X(f.q[0]),dy=Y(before.q[1])-Y(f.q[1]);if(Math.hypot(dx,dy)>1)dog.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:'translate(0px,0px)'}],{duration:350,easing:'ease-out'});}lastStep=g.end;
+}
+function render(auto=true){const list=groups();cursor=Math.min(cursor,list.length-1);const g=list[cursor],f=data.frames[g.end];if(auto)chosen=g.focus||0;
+ const names={unknown:'未发现',found:'已发现',cleared:'已清除',absent:'已排除'};ui.channel.replaceChildren(new Option('自动关注',0));f.channels.forEach(c=>ui.channel.add(new Option(`C${c.j} · ${names[c.status]}`,c.j)));ui.channel.value=chosen;
+ ui.counter.textContent=`${mode==='stops'?'流程':'动作'} ${cursor} / ${list.length-1}`;ui.stats.textContent=`累计 ${fmt(f.time/60)} 分钟 · 已发现 ${f.seen.length} · 待清除 ${f.channels.filter(c=>c.status==='found').length} · 已清除 ${f.channels.filter(c=>c.status==='cleared').length}`;
+ ui.slider.max=list.length-1;ui.slider.value=cursor;ui.progress.textContent=g.end?`原始动作 ${g.start===g.end?g.end:g.start+'—'+g.end} / ${data.actions.length}`:'出发前';
+ for(const k of ['title','action','feedback','why'])ui[k].textContent=g[k];const c=row(f,chosen),b=row(data.frames[Math.max(0,g.start-1)],chosen);
+ ui.focus.textContent=c?.status==='found'?`C${chosen} 包围半径：${b?.radius==null?'未记录':fmt(b.radius)} → ${c.radius==null?'未记录':fmt(c.radius)} ${unit}。${c.polygon?'填色为保守几何范围。':'未记录可能区域多边形。'}`:c?`C${chosen}：${names[c.status]}`:'选择频道可查看它的历史观测。';
+ if(cursor===list.length-1)ui.focus.textContent+=(f.complete?' 本次记录已确认完成。':' 记录结束，尚未确认完成。');
+ ui.prev.disabled=cursor===0;ui.next.disabled=cursor===list.length-1;ui.decision.hidden=!data.options.length||g.end<data.first_end;
+ ui.case.textContent=[data.case.name,data.case.seed==null?'':`种子 ${data.case.seed}`,ui.truth.checked?`真实源数 ${truth.length}（讲解可见）`:'',data.note].filter(Boolean).join(' · ');draw();
+}
+ui.prev.onclick=()=>{stop();cursor=Math.max(0,cursor-1);render();};ui.next.onclick=()=>{stop();cursor=Math.min(groups().length-1,cursor+1);render();};ui.slider.oninput=()=>{stop();cursor=Number(ui.slider.value);render();};
+ui.mode.onchange=()=>{stop();const step=groups()[cursor].end;mode=ui.mode.value;cursor=groups().findIndex(g=>g.end>=step);render();};ui.channel.onchange=()=>{chosen=Number(ui.channel.value)||groups()[cursor].focus||0;render(false);};ui.truth.onchange=()=>render(false);ui.zoom.onchange=draw;
+ui.play.onclick=()=>{if(playing){stop();return;}if(cursor===groups().length-1)cursor=0;ui.play.textContent='暂停';playing=setInterval(()=>{if(cursor>=groups().length-1){stop();return;}cursor++;render();},2200);};
+ui.truthLabel.hidden=!truth.length;if(!truth.length)ui.truth.checked=false;ui.agentLegend.textContent=`■ ${agent}`;
+for(const c of data.options){const tr=document.createElement('tr');for(const v of [(c.selected?'✓ ':'')+c.name,c.q.map(fmt).join(', '),c.channels,fmt(c.mean)]){const td=document.createElement('td');td.textContent=v;tr.append(td);}ui.options.append(tr);}
+new ResizeObserver(draw).observe(ui.plot);render();
+})();
+</script>
