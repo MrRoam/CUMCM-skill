@@ -1,0 +1,4 @@
+interface:
+  display_name: "运行过程回放"
+  short_description: "把单次运行日志转成可逐步查看动作、反馈、定位范围和决策理由的交互示意"
+  default_prompt: "请使用 $run-replay 读取这次运行的数据，生成可逐步回顾全流程的交互示意。"
